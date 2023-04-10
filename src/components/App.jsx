@@ -18,6 +18,22 @@ export class App extends Component {
     number: '',
   };
 
+  componentDidMount() {
+    const localContacts = localStorage.getItem('contacts');
+    if (localContacts) {
+      this.setState({ contacts: JSON.parse(localContacts) });
+    }
+  }
+
+  async componentDidUpdate(PrevProps, prevState) {
+    if (prevState.contacts.length !== this.state.contacts.length)
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    console.log(`prevState`);
+    console.log(prevState.contacts);
+    console.log(`state`);
+    console.log(this.state.contacts);
+  }
+
   handleSubmit = e => {
     e.preventDefault();
     const { name, number, contacts } = this.state;
@@ -36,14 +52,11 @@ export class App extends Component {
   };
 
   handleDelete = e => {
-    const { contacts } = this.state;
-
-    this.setState(
-      contacts.splice(
-        contacts.findIndex(contact => contact.id === e.target.id),
-        1
-      )
-    );
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(
+        contact => contact.id !== e.target.id
+      ),
+    }));
   };
   render() {
     return (
